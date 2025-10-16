@@ -1,0 +1,29 @@
+{% extends 'labels/base.html' %}
+
+{% block content %}
+<div class="mb-3">
+    <a href="{% url 'upload_csv' %}" class="btn btn-secondary">← Back to Upload</a>
+    <a href="{% url 'export_zip' csv_upload.id %}" class="btn btn-success">Download ZIP</a>
+    <a href="{% url 'export_pdf' csv_upload.id %}" class="btn btn-primary">Download PDF</a>
+    <a href="{% url 'regenerate_labels' csv_upload.id %}" class="btn btn-warning">Regenerate Labels</a>
+</div>
+
+<h2>Generated Labels ({{ labels.count }} total)</h2>
+
+<div class="row">
+    {% for label in labels %}
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <img src="{{ label.image.url }}" class="card-img-top" alt="{{ label.product_name }}">
+            <div class="card-body">
+                <h6 class="card-title">{{ label.product_name }}</h6>
+                <p class="card-text small">
+                    Code: {{ label.product_code }}<br>
+                    MRP: {{ label.mrp }}
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends 'labels/base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3>Upload CSV File</h3>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        {{ form.file }}
+                    </div>
+                    <button type="submit" class="btn btn-primary">Upload & Generate Labels</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h4>CSV Format Requirements</h4>
+            </div>
+            <div class="card-body">
+                <p>Your CSV should contain the following columns:</p>
+                <ul>
+                    <li>Product Name</li>
+                    <li>MRP</li>
+                    <li>Quality</li>
+                    <li>Size</li>
+                    <li>Net Quantity</li>
+                    <li>Product Code</li>
+                    <li>Design/Color</li>
+                    <li>Mth & Year of Mfg. </li>
+                    <li>GTIN (for barcode)</li>
+                    <li>Manufacturer</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3>Previous Uploads</h3>
+            </div>
+            <div class="card-body">
+                {% if uploads %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Uploaded</th>
+                            <th>Labels</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for upload in uploads %}
+                        <tr>
+                            <td>{{ upload.id }}</td>
+                            <td>{{ upload.uploaded_at|date:"Y-m-d H:i" }}</td>
+                            <td>{{ upload.labels.count }}</td>
+                            <td>
+                                <a href="{% url 'label_list' upload.id %}" class="btn btn-sm btn-info">View</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>No uploads yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
