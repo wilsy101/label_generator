@@ -1,11 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, FileResponse
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from .models import CSVUpload, ProductLabel
 from .forms import CSVUploadForm
 from .utils import process_csv, generate_label_image, create_zip_export, create_pdf_export
 import os
 
+@login_required
 def upload_csv(request):
     if request.method == 'POST':
         form = CSVUploadForm(request.POST, request.FILES)

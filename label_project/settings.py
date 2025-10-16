@@ -123,7 +123,11 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+# The URL to redirect to after a successful login (e.g., the home page)
+LOGIN_REDIRECT_URL = '/' 
 
+# The URL to redirect to after a successful logout
+LOGOUT_REDIRECT_URL = '/accounts/login/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
