@@ -25,39 +25,52 @@ def process_csv(csv_upload):
     Email us at support@trisa.co.in
     Call us at: +91 9156224974"""
     
-    with open(file_path, 'r', encoding='utf-8-sig') as f:
-        reader = csv.DictReader(f)
-        
-        # Delete existing labels for this upload
-        csv_upload.labels.all().delete()
-        
-        for row in reader:
-            label = ProductLabel.objects.create(
-                csv_upload=csv_upload,
-                product_name=row.get('ProductName', ''),
-                mrp=row.get('MRP', ''),
-                quality=row.get('Quality', ''),
-                size=row.get('Size', ''),
-                net_quantity=row.get('Net Quantity', ''),
-                product_code=row.get('Product Code', ''),
-                design_color=row.get('Design / Color', ''),
-                mfg_month='',
-                mfg_year='',
-                gtin=row.get('GTINs', ''),
-                manufacturer=manufacturer_text
-            )
+    try:
+        try:
+            encoder = 'cp1252'
+            with open(file_path, mode='r', encoding=encoder) as f:
+                reader = csv.DictReader(f)
+                print(f"Testing ecoder withv{encoder} for Product: {next(reader).get('ProductName')}")
+                # Delete existing labels for this upload
+                csv_upload.labels.all().delete()
             
-            # Parse Mth & Year of Mfg. column
-            mfg_date = row.get('Mth & Year of Mfg.', '')
-            if mfg_date:
-                label.mfg_month = mfg_date.split()[0] if mfg_date.split() else ''
-                label.mfg_year = mfg_date.split()[1] if len(mfg_date.split()) > 1 else ''
-                label.save()
-            
-            # Generate label image
-            image_file = generate_label_image(label)
-            label.image.save(f'label_{label.id}.png', image_file, save=True)
-    
+        except:
+            encoder = 'utf-8'
+            with open(file_path, mode='r', encoding=encoder) as f:
+                reader = csv.DictReader(f)
+                print(f"Testing ecoder withv{encoder} for Product: {next(reader).get('ProductName')}")
+        with open(file_path, mode='r', encoding=encoder) as f:
+            print("opened csv")
+            reader = csv.DictReader(f)
+            for row in reader:
+                print(row.get('ProductName'))
+                label = ProductLabel.objects.create(
+                    csv_upload=csv_upload,
+                    product_name=row.get('ProductName', ''),
+                    mrp=row.get('MRP', ''),
+                    quality=row.get('Quality', ''),
+                    size=row.get('Size', ''),
+                    net_quantity=row.get('Net Quantity', ''),
+                    product_code=row.get('Product Code', ''),
+                    design_color=row.get('Design / Color', ''),
+                    mfg_month='',
+                    mfg_year='',
+                    gtin=row.get('GTINs', ''),
+                    manufacturer=manufacturer_text
+                )
+                
+                # Parse Mth & Year of Mfg. column
+                mfg_date = row.get('Mth & Year of Mfg.', '')
+                if mfg_date:
+                    label.mfg_month = mfg_date.split()[0] if mfg_date.split() else ''
+                    label.mfg_year = mfg_date.split()[1] if len(mfg_date.split()) > 1 else ''
+                    label.save()
+                
+                # Generate label image
+                image_file = generate_label_image(label)
+                label.image.save(f'label_{label.id}.png', image_file, save=True)
+    except Exception as e:
+        print(f"Couldn't complete label creation. error: {e}")
     csv_upload.processed = True
     csv_upload.save()
 
